@@ -176,6 +176,7 @@ E2E 使用专用 SQLite 和测试账号，不会写入 MySQL。测试服务固�
 - `Access denied for user`：检查 `.env` 用户、密码、数据库名和 `GRANT` 是否一致。
 - 前端请求 404：确认 Django 位于 8000 端口，Vue 开发服务器位于 8080 端口。
 - 前端首次启动较慢：首次编译需要生成缓存，正常应在几十秒内完成；本模板已关闭 Element UI 的重复 Babel 转译。若长时间停在 `[24%] building`，按 `Ctrl+C` 后删除 `frontend\node_modules\.cache`，重新执行 `npm run serve`。
+- `KeyError: 'seed_e2e'`：`seed_e2e` 只是浏览器自动化测试账号命令，不是后台启动必需命令。先执行 `git pull` 获取最新版，并确认 `backend\permission\management\commands\seed_e2e.py` 存在；普通后台请执行 `migrate`、`init_system` 和 `createsuperuser`。另外确认 `where python` 的第一项是项目的 `.venv\Scripts\python.exe`。
 - 登录后立即回到登录页：Token 已过期或修改密码后版本失效，请重新登录。
 - 看不到“权限示例”：在 Django Admin 中给账号角色分配 `example` 菜单。
 - 图片上传失败：仅支持 JPEG、PNG、WebP，原文件不能超过 2MB。
