@@ -25,16 +25,35 @@ OProject/
 
 ## 1. 创建 MySQL 数据库
 
+本项目已按以下本机验证参数配置（仅适用于本地教学环境）：
+
+| 配置项 | 值 |
+|---|---|
+| 数据库 | `oproject_db` |
+| 用户 | `oproject_user` |
+| 密码 | `OProject_Test_9vK4_r2L` |
+| 主机/端口 | `127.0.0.1:3306` |
+
 使用 MySQL 管理员执行：
 
 ```sql
 CREATE DATABASE oproject_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'oproject_user'@'localhost' IDENTIFIED BY '请换成你自己的密码';
+CREATE USER IF NOT EXISTS 'oproject_user'@'localhost' IDENTIFIED BY 'OProject_Test_9vK4_r2L';
+ALTER USER 'oproject_user'@'localhost' IDENTIFIED BY 'OProject_Test_9vK4_r2L';
 GRANT ALL PRIVILEGES ON oproject_db.* TO 'oproject_user'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-复制 `.env.example` 为 `.env`，再填写相同的数据库密码。`.env` 已被 Git 忽略。
+复制 `.env.example` 为 `.env`，并填写上表中的连接参数。当前工作区的 `.env` 已配置这些值且被 Git 忽略；部署到其他环境时请立即更换密码。
+
+验证连接：
+
+```powershell
+cd OProject
+.\.venv\Scripts\python.exe backend\manage.py check --database default
+.\.venv\Scripts\python.exe backend\manage.py migrate --noinput
+.\.venv\Scripts\python.exe backend\manage.py init_system
+```
 
 ## 2. 启动后端
 

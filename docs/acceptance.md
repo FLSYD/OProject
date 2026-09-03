@@ -2,6 +2,8 @@
 
 ## 自动化命令
 
+真实 MySQL 验收使用本机专用连接：数据库 `oproject_db`，用户 `oproject_user`，主机 `127.0.0.1:3306`。密码只用于本地教学验证，配置在被 Git 忽略的根目录 `.env` 中；其他使用者应按 README 的 SQL 创建账号后再填写自己的密码。
+
 ```powershell
 $env:DJANGO_USE_SQLITE='true'
 .\.venv\Scripts\python.exe backend\manage.py check
