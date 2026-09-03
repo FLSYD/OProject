@@ -94,6 +94,19 @@ python backend\manage.py init_system
 
 ## 3. 启动后端
 
+### 一键启动（Windows 推荐）
+
+在项目根目录双击 `start.bat`，或在 PowerShell 执行：
+
+```powershell
+cd OProject
+.\start.ps1
+```
+
+脚本会自动创建 `.venv`、安装前后端依赖、复制 `.env.example`、执行数据库迁移和初始化，并打开两个窗口运行 Django 与 Vue。第一次运行前，请确保 MySQL 已按上面的 SQL 创建数据库和专用账号。
+
+如果一键脚本在迁移阶段停止，请先检查根目录 `.env` 中的 MySQL 配置，再重新运行即可。
+
 ```powershell
 cd OProject
 .\.venv\Scripts\Activate.ps1
