@@ -27,6 +27,18 @@ function Get-AvailablePort {
     throw "No available port found near $PreferredPort."
 }
 
+function Assert-PortAvailable {
+    param([int]$Port)
+    $listener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Loopback, $Port)
+    try {
+        $listener.Start()
+    } catch {
+        throw "Frontend port $Port is occupied. Stop the existing Vue/IIS service using port $Port, then run start.bat again."
+    } finally {
+        $listener.Stop()
+    }
+}
+
 function Wait-ForUrl {
     param([string]$Url, [int]$TimeoutSeconds = 90)
     $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
@@ -104,9 +116,10 @@ Push-Location $BackendRoot
 try { & $PythonExe manage.py setup_admin } finally { Pop-Location }
 if ($LASTEXITCODE -ne 0) { throw 'Administrator setup failed.' }
 
-Write-Host '[7/8] Selecting ports and starting services...' -ForegroundColor Yellow
+Write-Host '[7/8] Checking ports and starting services...' -ForegroundColor Yellow
 $BackendPort = Get-AvailablePort -PreferredPort 8000
-$FrontendPort = Get-AvailablePort -PreferredPort 8080
+$FrontendPort = 8080
+Assert-PortAvailable -Port $FrontendPort
 $BackendBaseUrl = "http://127.0.0.1:$BackendPort"
 $FrontendBaseUrl = "http://127.0.0.1:$FrontendPort"
 $BackendCommand = "& '$PythonExe' manage.py runserver 127.0.0.1:$BackendPort"
