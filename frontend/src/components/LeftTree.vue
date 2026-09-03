@@ -1,7 +1,7 @@
 <template>
   <aside class="sidebar">
     <div class="brand"><span class="logo">X</span><b v-if="!collapsed || mobile">XX管理系统</b></div>
-    <el-menu :default-active="$route.path" :collapse="collapsed && !mobile" router background-color="#182235" text-color="#aeb9cd" active-text-color="#fff" @select="$emit('navigate')">
+    <el-menu :default-active="$route.path" :collapse="collapsed && !mobile" background-color="#182235" text-color="#aeb9cd" active-text-color="#fff" @select="navigate">
       <el-menu-item v-for="menu in menus" :key="menu.code" :index="menu.path">
         <i :class="menu.icon || 'el-icon-menu'" /><span slot="title">{{ menu.name }}</span>
       </el-menu-item>
@@ -16,6 +16,13 @@ export default {
   computed: { menus() { return this.$store.state.menus } },
   created() {
     if (!this.$store.getters.mustChangePassword) this.$store.dispatch('fetchMenus').catch(() => {})
+  },
+  methods: {
+    navigate(path) {
+      this.$emit('navigate')
+      if (this.$route.path === path) return
+      this.$router.push(path).catch(error => { if (error.name !== 'NavigationDuplicated') throw error })
+    }
   }
 }
 </script>
