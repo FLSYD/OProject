@@ -52,7 +52,7 @@ Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 
 ## 2. 创建 MySQL 数据库
 
-为了让新手可以直接验证，本项目提供一组本机专用测试账号（仅适用于本地教学环境）：
+本地教学环境使用以下数据库连接参数：
 
 | 配置项 | 值 |
 |---|---|
@@ -108,23 +108,6 @@ python manage.py runserver
 
 管理员新建账号的顺序：进入“认证和授权 → 用户 → 增加用户”，填写用户名、唯一邮箱、临时密码并选择角色。系统会自动标记“首次需改密”，临时密码不会被明文保存。
 
-### 本地测试账号
-
-执行 `python manage.py seed_e2e` 后，可使用以下账号验证页面和权限流程：
-
-| 类型 | 用户名 | 密码 | 说明 |
-|---|---|---|---|
-| 管理员 | `e2e_admin` | `E2E_Admin!234` | 可访问首页和“权限示例” |
-| 普通用户 | `e2e_user` | `E2E_Temp!234` | 首次登录必须修改密码 |
-
-普通用户示例新密码为 `E2E_New!2345`。测试账号仅用于本地教学和自动化验收，正式环境请在 Django Admin 中创建账号并设置新密码。
-
-注意登录入口不同：
-
-- Django Admin 后台地址 `http://127.0.0.1:8000/admin/` 只能使用管理员账号 `e2e_admin` 和密码 `E2E_Admin!234`；`e2e_user` 不是后台管理员。
-- Vue 前端地址 `http://127.0.0.1:8080/#/login` 可使用上述两个账号登录，普通用户首次登录会被要求修改密码。
-- 如果后台密码忘记或输入错误，在 `backend` 目录重新执行 `python manage.py seed_e2e` 即可重置测试管理员密码。
-
 ## 4. 启动前端
 
 另开一个终端：
@@ -174,6 +157,26 @@ npm run test:e2e
 ```
 
 E2E 使用专用 SQLite 和测试账号，不会写入 MySQL。测试服务固定使用 `18000` 与 `18080` 端口，避免与日常开发端口冲突。
+
+### 本地测试账号（可选）
+
+测试账号不会在普通启动流程中自动创建。需要进行完整页面验收时，再执行：
+
+```powershell
+cd OProject\backend
+python manage.py seed_e2e
+```
+
+创建后可使用以下账号：
+
+| 类型 | 用户名 | 密码 | 说明 |
+|---|---|---|---|
+| 管理员 | `e2e_admin` | `E2E_Admin!234` | Django Admin 和前端均可登录 |
+| 普通用户 | `e2e_user` | `E2E_Temp!234` | 首次登录必须修改密码 |
+
+普通用户示例新密码为 `E2E_New!2345`。测试账号仅用于本地教学和自动化验收，正式环境请在 Django Admin 中创建账号并设置新密码。
+
+注意登录入口不同：Django Admin 使用 `e2e_admin`；Vue 前端可使用上述两个账号。若后台测试密码忘记，可在 `backend` 目录重新执行 `python manage.py seed_e2e`。
 
 进一步说明见 [架构导读](docs/architecture.md)、[API 说明](docs/api.md) 和 [验收清单](docs/acceptance.md)。
 
