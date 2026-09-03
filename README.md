@@ -23,7 +23,34 @@ OProject/
 └─ .env.example             环境变量示例
 ```
 
-## 1. 创建 MySQL 数据库
+## 1. 安装 Python 并创建虚拟环境
+
+项目后端需要 Python 3.10 或更高版本。先确认 Python 已安装：
+
+```powershell
+python --version
+```
+
+如果提示找不到命令，请先从 Python 官网安装 Python 3.10+，安装时勾选“Add Python to PATH”。然后在 `OProject` 项目根目录执行（Windows 推荐明确使用 Python 3.10）：
+
+```powershell
+py -3.10 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r backend\requirements.txt
+```
+
+如果电脑没有 `py` 启动器，也可以使用 `python -m venv .venv`；请确认前面的 `python --version` 显示的是 3.10 或更高版本。
+
+看到命令行前出现 `(.venv)` 就表示虚拟环境已激活。PowerShell 如果禁止脚本运行，可先执行一次：
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+```
+
+关闭终端后重新打开，并回到项目根目录再次执行激活命令。之后所有 `python manage.py` 命令都应在虚拟环境激活状态下运行。
+
+## 2. 创建 MySQL 数据库
 
 为了让新手可以直接验证，本项目提供一组本机专用测试账号（仅适用于本地教学环境）：
 
@@ -58,20 +85,18 @@ FLUSH PRIVILEGES;
 
 ```powershell
 cd OProject
-.\.venv\Scripts\python.exe backend\manage.py check --database default
-.\.venv\Scripts\python.exe backend\manage.py migrate --noinput
-.\.venv\Scripts\python.exe backend\manage.py init_system
+python backend\manage.py check --database default
+python backend\manage.py migrate --noinput
+python backend\manage.py init_system
 ```
 
 如果最后一条命令显示“角色和菜单初始化完成”，说明数据库配置正确。
 
-## 2. 启动后端
+## 3. 启动后端
 
 ```powershell
 cd OProject
-py -3.10 -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install -r .\backend\requirements.txt
 cd backend
 python manage.py migrate
 python manage.py init_system
@@ -94,7 +119,7 @@ python manage.py runserver
 
 普通用户示例新密码为 `E2E_New!2345`。测试账号仅用于本地教学和自动化验收，正式环境请在 Django Admin 中创建账号并设置新密码。
 
-## 3. 启动前端
+## 4. 启动前端
 
 另开一个终端：
 
@@ -108,7 +133,7 @@ npm run serve
 
 登录页：`http://127.0.0.1:8080/#/login`
 
-## 4. API
+## 5. API
 
 | 方法 | 地址 | 用途 |
 |---|---|---|
@@ -122,7 +147,7 @@ npm run serve
 
 所有响应采用 `{ code, msg, data }`。前端将 Token 放在 `sessionStorage`，关闭浏览器标签页后会话自动清除。
 
-## 5. 测试
+## 6. 测试
 
 后端测试默认使用独立 SQLite，不会修改 MySQL：
 

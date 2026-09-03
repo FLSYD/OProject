@@ -4,6 +4,14 @@
 
 真实 MySQL 验收使用 README 中已写明的本机专用连接：数据库 `oproject_db`，用户 `oproject_user`，密码 `OProject_Test_9vK4_r2L`，主机 `127.0.0.1:3306`。这是本地教学密码，部署到其他环境前必须更换。
 
+运行下面命令前，请先在项目根目录创建并激活虚拟环境：
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r backend\requirements.txt
+```
+
 ```powershell
 $env:DJANGO_USE_SQLITE='true'
 .\.venv\Scripts\python.exe backend\manage.py check
