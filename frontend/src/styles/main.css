@@ -1,0 +1,6 @@
+* { box-sizing: border-box; }
+html, body, #app { margin: 0; width: 100%; min-height: 100%; font-family: "Microsoft YaHei", Arial, sans-serif; color: #303133; }
+body { background: #f4f6fa; }
+.page-card { background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 3px 16px rgba(31, 45, 61, .07); }
+.page-title { margin: 0 0 20px; font-size: 22px; }
+
