@@ -119,6 +119,12 @@ python manage.py runserver
 
 普通用户示例新密码为 `E2E_New!2345`。测试账号仅用于本地教学和自动化验收，正式环境请在 Django Admin 中创建账号并设置新密码。
 
+注意登录入口不同：
+
+- Django Admin 后台地址 `http://127.0.0.1:8000/admin/` 只能使用管理员账号 `e2e_admin` 和密码 `E2E_Admin!234`；`e2e_user` 不是后台管理员。
+- Vue 前端地址 `http://127.0.0.1:8080/#/login` 可使用上述两个账号登录，普通用户首次登录会被要求修改密码。
+- 如果后台密码忘记或输入错误，在 `backend` 目录重新执行 `python manage.py seed_e2e` 即可重置测试管理员密码。
+
 ## 4. 启动前端
 
 另开一个终端：

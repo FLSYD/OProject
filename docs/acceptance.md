@@ -28,6 +28,8 @@ npm run test:e2e
 
 执行 `backend\manage.py seed_e2e` 后，管理员测试账号为 `e2e_admin / E2E_Admin!234`，普通用户测试账号为 `e2e_user / E2E_Temp!234`。普通用户首次登录需修改为新密码（示例：`E2E_New!2345`）。
 
+后台 Admin 登录必须使用 `e2e_admin`，不能使用普通用户；前端登录入口是 `http://127.0.0.1:8080/#/login`，后台入口是 `http://127.0.0.1:8000/admin/`。
+
 注意：`seed_e2e` 仅用于自动化测试。如果只是运行后台管理，不要执行此命令；请使用 `python manage.py migrate`、`python manage.py init_system` 和 `python manage.py createsuperuser`。
 
 1. 在 Django Admin 创建普通用户，填写唯一邮箱、临时密码并选择普通用户角色。
