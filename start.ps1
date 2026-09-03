@@ -17,10 +17,6 @@ Write-Host '=== OProject one-click setup and startup ===' -ForegroundColor Cyan
 if (-not (Get-Command py -ErrorAction SilentlyContinue) -and -not (Get-Command python -ErrorAction SilentlyContinue)) {
     throw 'Python was not found. Install Python 3.10+ and enable Add Python to PATH.'
 }
-if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
-    throw 'npm was not found. Install Node.js 18+.'
-}
-
 if (-not (Test-Path $PythonExe)) {
     Write-Host '[1/7] Creating Python virtual environment...' -ForegroundColor Yellow
     $hasPython310 = $false
@@ -29,6 +25,10 @@ if (-not (Test-Path $PythonExe)) {
         $hasPython310 = ($LASTEXITCODE -eq 0)
     }
     if ($hasPython310) { & py -3.10 -m venv $VenvRoot } else { & python -m venv $VenvRoot }
+}
+
+if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
+    throw 'npm was not found. Install Node.js 18+.'
 }
 
 if (-not (Test-Path '.env')) {
@@ -69,14 +69,9 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'System initialization failed.' }
 } finally { Pop-Location }
 
-$hasAdmin = (& $PythonExe (Join-Path $BackendRoot 'manage.py') shell -c "from django.contrib.auth.models import User; print(User.objects.filter(is_superuser=True).exists())").Trim()
-if ($hasAdmin -ne 'True') {
-    Write-Host '[6/7] No administrator found. Create the first administrator now.' -ForegroundColor Yellow
-    Push-Location $BackendRoot
-    try { & $PythonExe manage.py createsuperuser } finally { Pop-Location }
-} else {
-    Write-Host '[6/7] Administrator already exists.' -ForegroundColor DarkGray
-}
+Write-Host '[6/7] Creating one-click administrator...' -ForegroundColor Yellow
+Push-Location $BackendRoot
+try { & $PythonExe manage.py setup_admin } finally { Pop-Location }
 
 Write-Host '[7/7] Starting backend and frontend...' -ForegroundColor Yellow
 $BackendCommand = "& '$PythonExe' manage.py runserver 127.0.0.1:8000"
@@ -88,3 +83,5 @@ Write-Host ''
 Write-Host 'Startup commands sent.' -ForegroundColor Green
 Write-Host 'Frontend: http://127.0.0.1:8080/'
 Write-Host 'Admin:    http://127.0.0.1:8000/admin/'
+Write-Host 'Admin username: admin'
+Write-Host 'Admin password: Admin@123456'
