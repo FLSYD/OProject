@@ -25,7 +25,7 @@ OProject/
 
 ## 1. 创建 MySQL 数据库
 
-本项目已按以下本机验证参数配置（仅适用于本地教学环境）：
+为了让新手可以直接验证，本项目提供一组本机专用测试账号（仅适用于本地教学环境）：
 
 | 配置项 | 值 |
 |---|---|
@@ -34,19 +34,27 @@ OProject/
 | 密码 | `OProject_Test_9vK4_r2L` |
 | 主机/端口 | `127.0.0.1:3306` |
 
-使用 MySQL 管理员执行：
+按下面 3 步操作即可：
+
+### 第 1 步：创建数据库和专用账号
+
+用 MySQL 管理员执行以下完整 SQL（账号和密码已经写好，不需要自行修改）：
 
 ```sql
-CREATE DATABASE oproject_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS oproject_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE USER IF NOT EXISTS 'oproject_user'@'localhost' IDENTIFIED BY 'OProject_Test_9vK4_r2L';
 ALTER USER 'oproject_user'@'localhost' IDENTIFIED BY 'OProject_Test_9vK4_r2L';
 GRANT ALL PRIVILEGES ON oproject_db.* TO 'oproject_user'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-复制 `.env.example` 为 `.env`，并填写上表中的连接参数。当前工作区的 `.env` 已配置这些值且被 Git 忽略；部署到其他环境时请立即更换密码。
+### 第 2 步：准备 `.env`
 
-验证连接：
+复制 `.env.example` 为 `.env`。示例文件已经填写好上表中的专用账号和密码，直接复制即可。`.env` 已被 Git 忽略，不会提交到仓库。
+
+> 这组密码只用于本地教学。部署到其他电脑或生产环境时，请修改 `.env` 和 SQL 中的密码。
+
+### 第 3 步：验证数据库连接
 
 ```powershell
 cd OProject
@@ -54,6 +62,8 @@ cd OProject
 .\.venv\Scripts\python.exe backend\manage.py migrate --noinput
 .\.venv\Scripts\python.exe backend\manage.py init_system
 ```
+
+如果最后一条命令显示“角色和菜单初始化完成”，说明数据库配置正确。
 
 ## 2. 启动后端
 
