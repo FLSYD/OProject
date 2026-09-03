@@ -1,6 +1,8 @@
 import pytest
 from django.contrib.auth.models import User
+from django.core.management import call_command
 from django.urls import reverse
+from rest_framework.test import APIClient
 
 
 @pytest.mark.django_db
@@ -49,3 +51,19 @@ def test_admin_rejects_duplicate_email_ignoring_case(client, menu_data):
     assert response.status_code == 200
     assert "该邮箱已被使用" in response.content.decode()
     assert not User.objects.filter(username="duplicate_email").exists()
+
+
+@pytest.mark.django_db
+def test_one_click_admin_can_log_in_and_is_reset_on_repeat():
+    call_command("setup_admin")
+    admin = User.objects.get(username="admin")
+    assert admin.is_superuser is True
+    assert admin.is_staff is True
+    assert admin.check_password("Admin@123456") is True
+    assert APIClient().post("/api/login/", {"username": "admin", "password": "Admin@123456"}, format="json").status_code == 200
+
+    admin.set_password("ChangedPassword!234")
+    admin.save(update_fields=["password"])
+    call_command("setup_admin")
+    admin.refresh_from_db()
+    assert admin.check_password("Admin@123456") is True

@@ -33,7 +33,14 @@ export default {
           this.$message.success('登录成功')
           this.$router.replace(data.must_change_password ? '/index/profile?forcePassword=1' : '/index/dashboard')
         } catch (error) {
-          this.errorMsg = (error.response && error.response.data && error.response.data.msg) || '登录失败，请检查网络连接'
+          const response = error.response
+          if (response && response.data && response.data.msg) {
+            this.errorMsg = response.data.msg
+          } else if (response) {
+            this.errorMsg = `登录接口返回 HTTP ${response.status}，请确认当前前端连接的是本项目后端`
+          } else {
+            this.errorMsg = '无法连接后端服务，请使用一键脚本显示的实际登录地址'
+          }
         } finally { this.loading = false }
       })
     }
@@ -51,4 +58,3 @@ export default {
 .login-button { width: 100%; height: 44px; background: linear-gradient(135deg, #667eea, #764ba2); border: 0; }
 .login-footer { text-align: center; margin-top: 28px; font-size: 12px; }
 </style>
-
