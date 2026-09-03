@@ -1,12 +1,11 @@
 <template>
-  <el-dialog title="编辑头像" :visible.sync="show" width="560px" custom-class="avatar-dialog" @closed="cleanup">
-    <div v-if="!imageUrl" class="dropzone" @click="chooseFile" @dragover.prevent @drop.prevent="handleDrop">
-      <i class="el-icon-upload" /><p>点击或拖放 JPEG、PNG、WebP 图片</p><small>最大 2MB</small>
+  <el-dialog title="编辑头像" :visible.sync="show" width="720px" custom-class="avatar-dialog" @closed="cleanup">
+    <div v-if="!imageUrl" class="dropzone" :class="{ dragging }" @click="chooseFile" @dragover.prevent="dragging = true" @dragleave.prevent="dragging = false" @drop.prevent="handleDrop">
+      <i class="el-icon-upload" /><b>点击或拖放图片到这里</b><span>支持 JPEG、PNG、WebP，大小不超过 2MB</span>
     </div>
     <div v-else class="editor" tabindex="0" @keydown="handleKeydown">
-      <div class="canvas-wrap" @wheel.prevent="handleWheel" @pointerdown="pointerDown" @pointermove="pointerMove" @pointerup="pointerUp" @pointercancel="pointerUp">
-        <canvas ref="canvas" width="320" height="320" />
-      </div>
+      <div class="pane-title">裁剪与实时预览</div>
+      <div class="canvas-wrap" @wheel.prevent="handleWheel" @pointerdown="pointerDown" @pointermove="pointerMove" @pointerup="pointerUp" @pointercancel="pointerUp"><canvas ref="canvas" width="320" height="320" /><div class="selection" /></div>
       <div class="toolbar">
         <el-button-group>
           <el-button icon="el-icon-minus" @click="zoom(-0.1)">缩小</el-button>
@@ -16,7 +15,7 @@
         <el-button @click="reset">重置</el-button>
         <el-button @click="chooseFile">重新选择</el-button>
       </div>
-      <p class="tip">拖动图片调整位置；滚轮缩放；方向键微调，Shift + 方向键可加速。</p>
+      <p class="tip">拖动图片调整位置，滚轮缩放；方向键微调，Shift 可加速。</p>
     </div>
     <input ref="fileInput" data-testid="avatar-file" class="hidden" type="file" accept="image/jpeg,image/png,image/webp" @change="handleFileInput">
     <span slot="footer"><el-button @click="show = false">取消</el-button><el-button data-testid="avatar-save" type="primary" :disabled="!imageUrl" :loading="saving" @click="save">保存头像</el-button></span>
@@ -30,7 +29,7 @@ export default {
   name: 'AvatarEditor',
   props: { visible: Boolean, saving: Boolean },
   data() {
-    return { image: null, imageUrl: '', scale: 1, baseScale: 1, rotation: 0, offsetX: 0, offsetY: 0, pointers: new Map(), lastDistance: 0 }
+    return { image: null, imageUrl: '', scale: 1, baseScale: 1, rotation: 0, offsetX: 0, offsetY: 0, pointers: new Map(), lastDistance: 0, dragging: false }
   },
   computed: {
     show: { get() { return this.visible }, set(value) { this.$emit('update:visible', value) } }
@@ -38,7 +37,7 @@ export default {
   methods: {
     chooseFile() { this.$refs.fileInput.click() },
     handleFileInput(event) { const file = event.target.files[0]; if (file) this.loadFile(file); event.target.value = '' },
-    handleDrop(event) { const file = event.dataTransfer.files[0]; if (file) this.loadFile(file) },
+    handleDrop(event) { this.dragging = false; const file = event.dataTransfer.files[0]; if (file) this.loadFile(file) },
     loadFile(file) {
       if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) return this.$message.error('仅支持 JPEG、PNG、WebP 图片')
       if (file.size > 2 * 1024 * 1024) return this.$message.error('图片不能超过 2MB')
@@ -103,7 +102,13 @@ export default {
       this.offsetY += y
       this.draw()
     },
-    save() { this.$refs.canvas.toBlob(blob => { if (blob) this.$emit('save', blob) }, 'image/webp', 0.9) },
+    save() {
+      const output = document.createElement('canvas')
+      output.width = 320
+      output.height = 320
+      output.getContext('2d').drawImage(this.$refs.canvas, 32, 32, 256, 256, 0, 0, 320, 320)
+      output.toBlob(blob => { if (blob) this.$emit('save', blob) }, 'image/webp', 0.9)
+    },
     revokeUrl() { if (this.imageUrl) URL.revokeObjectURL(this.imageUrl) },
     cleanup() {
       this.revokeUrl()
@@ -120,9 +125,10 @@ export default {
 </script>
 
 <style scoped>
-.dropzone { padding: 58px 20px; text-align: center; border: 2px dashed #c0c4cc; border-radius: 10px; color: #909399; cursor: pointer; }
-.dropzone:hover { border-color: #667eea; color: #667eea; }.dropzone i { font-size: 48px; }.dropzone p { margin: 12px 0 6px; }.hidden { display: none; }
-.editor { outline: none; }.canvas-wrap { width: 320px; height: 320px; margin: auto; overflow: hidden; border-radius: 50%; background: #eef0f5; touch-action: none; cursor: move; box-shadow: 0 0 0 5px #fff, 0 0 0 6px #dcdfe6; }
-canvas { width: 100%; height: 100%; display: block; }.toolbar { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 22px; }.tip { text-align: center; color: #909399; font-size: 12px; }
+.dropzone { min-height: 330px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; border: 2px dashed #cbd3e6; border-radius: 18px; color: var(--app-muted); background: #fafbff; cursor: pointer; transition: .2s; }
+.dropzone:hover, .dropzone.dragging { border-color: var(--app-primary); background: #f1f3ff; }.dropzone i { font-size: 58px; color: var(--app-primary); }.dropzone b { color: #35405a; font-size: 18px; }.hidden { display: none; }
+.editor { outline: none; }.pane-title { margin-bottom: 12px; font-weight: 600; text-align: center; }.canvas-wrap { position: relative; width: 320px; height: 320px; margin: auto; overflow: hidden; border-radius: 14px; background: #202a3b; touch-action: none; cursor: move; box-shadow: 0 8px 25px rgba(58,70,120,.22); }
+canvas { width: 100%; height: 100%; display: block; }.selection { position: absolute; inset: 10%; border: 2px solid #fff; border-radius: 50%; box-shadow: 0 0 0 9999px rgba(0,0,0,.38), 0 0 0 1px var(--app-primary); pointer-events: none; }.toolbar { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 22px; }.tip { text-align: center; color: var(--app-muted); font-size: 12px; }
+.avatar-dialog { max-width: 96vw; }
 @media (max-width: 600px) { .canvas-wrap { width: 260px; height: 260px; } }
 </style>

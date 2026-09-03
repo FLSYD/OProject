@@ -1,14 +1,14 @@
 <template>
-  <div class="login-page">
-    <el-card class="login-card" shadow="always">
-      <div class="login-title"><h1>XX管理系统</h1><p>欢迎登录新手教学模板</p></div>
+  <div class="auth-page">
+    <el-card class="auth-card" shadow="always">
+      <h1 class="auth-title">XX管理系统</h1>
+      <p class="auth-subtitle">欢迎回来，请登录您的账号</p>
       <el-alert v-if="errorMsg" :title="errorMsg" type="error" :closable="false" show-icon />
-      <el-form ref="loginForm" :model="form" :rules="rules" @keyup.enter.native="submit">
-        <el-form-item prop="username"><el-input v-model.trim="form.username" prefix-icon="el-icon-user" placeholder="用户名" /></el-form-item>
-        <el-form-item prop="password"><el-input v-model="form.password" prefix-icon="el-icon-lock" type="password" show-password placeholder="密码" /></el-form-item>
-        <el-button type="primary" class="login-button" :loading="loading" @click="submit">登录</el-button>
+      <el-form ref="loginForm" :model="form" :rules="rules" label-position="top" @keyup.enter.native="submit">
+        <el-form-item label="用户名" prop="username"><el-input v-model.trim="form.username" prefix-icon="el-icon-user" placeholder="请输入用户名" /></el-form-item>
+        <el-form-item label="密码" prop="password"><el-input v-model="form.password" prefix-icon="el-icon-lock" type="password" show-password placeholder="请输入密码" /></el-form-item>
+        <el-button type="primary" class="full-button" :loading="loading" @click="submit">登录</el-button>
       </el-form>
-      <div class="login-footer">© 2026 XX管理系统</div>
     </el-card>
   </div>
 </template>
@@ -31,7 +31,7 @@ export default {
         try {
           const data = await this.$store.dispatch('login', this.form)
           this.$message.success('登录成功')
-          this.$router.replace(data.must_change_password ? '/index/profile?forcePassword=1' : '/index/dashboard')
+          this.$router.replace(data.must_change_password ? '/index/profile?forcePassword=1' : (this.$route.query.redirect || '/index/dashboard'))
         } catch (error) {
           const response = error.response
           if (response && response.data && response.data.msg) {
@@ -49,12 +49,10 @@ export default {
 </script>
 
 <style scoped>
-.login-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #667eea, #764ba2); }
-.login-card { width: 420px; border: 0; border-radius: 16px; padding: 18px; }
-.login-title { text-align: center; margin-bottom: 25px; }
-.login-title h1 { margin: 0 0 8px; font-size: 28px; }
-.login-title p, .login-footer { color: #909399; }
+.auth-page { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: radial-gradient(circle at 12% 18%, rgba(255,255,255,.22), transparent 28%), linear-gradient(135deg, var(--app-primary), #7658c5); }
+.auth-card { width: min(430px, 100%); padding: 16px 14px; border: 0; border-radius: 20px; box-shadow: 0 24px 70px rgba(20, 27, 58, .3); }
+.auth-title { margin: 8px 0 4px; text-align: center; font-size: 28px; }
+.auth-subtitle { margin: 0 0 28px; text-align: center; color: var(--app-muted); }
 .el-alert { margin-bottom: 18px; }
-.login-button { width: 100%; height: 44px; background: linear-gradient(135deg, #667eea, #764ba2); border: 0; }
-.login-footer { text-align: center; margin-top: 28px; font-size: 12px; }
+.full-button { background: var(--app-primary); border-color: var(--app-primary); }
 </style>

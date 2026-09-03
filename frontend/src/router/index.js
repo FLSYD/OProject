@@ -40,4 +40,8 @@ router.beforeEach(async (to, from, next) => {
   next()
 })
 
+router.afterEach(to => {
+  document.title = to.meta.title ? `${to.meta.title} - XX管理系统` : 'XX管理系统'
+})
+
 export default router

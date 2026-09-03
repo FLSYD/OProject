@@ -1,4 +1,3 @@
-<template><section class="page-card welcome"><i class="el-icon-s-home" /><h2>欢迎使用 XX管理系统</h2><p>这是一个保持经典 Django + Vue 2 架构的基础教学模板。</p></section></template>
+<template><section class="page-card welcome"><div class="mark">XX</div><h1>欢迎使用 XX管理系统</h1><p>这是一个可复用的管理系统基础模板。请从后续模块开始构建您的业务功能。</p></section></template>
 <script>export default { name: 'DashboardView' }</script>
-<style scoped>.welcome { text-align: center; padding: 80px 20px; }.welcome i { font-size: 58px; color: #667eea; }.welcome h2 { margin: 20px 0 10px; }.welcome p { color: #909399; }</style>
-
+<style scoped>.welcome { text-align: center; padding: 70px 20px; }.mark { width: 82px; height: 82px; margin: auto; display: grid; place-items: center; border-radius: 24px; color: #fff; font-size: 25px; font-weight: 800; background: linear-gradient(135deg, var(--app-primary), #825bc0); box-shadow: 0 15px 35px rgba(89,104,232,.28); }.welcome h1 { margin: 24px 0 10px; }.welcome p { color: var(--app-muted); }</style>

@@ -2,8 +2,8 @@ const { test, expect } = require('@playwright/test')
 
 async function login(page, username, password) {
   await page.goto('/#/login')
-  await page.getByPlaceholder('用户名').fill(username)
-  await page.getByPlaceholder('密码').fill(password)
+  await page.getByPlaceholder('请输入用户名').fill(username)
+  await page.getByPlaceholder('请输入密码').fill(password)
   await page.getByRole('button', { name: '登录' }).click()
 }
 
@@ -21,7 +21,7 @@ test('普通用户首次登录必须修改密码', async ({ page }) => {
   await inputs.nth(0).fill('E2E_Temp!234')
   await inputs.nth(1).fill('E2E_New!2345')
   await inputs.nth(2).fill('E2E_New!2345')
-  await page.getByRole('button', { name: '修改密码' }).click()
+  await page.getByRole('button', { name: '设置新密码' }).click()
   await expect(page).toHaveURL(/#\/login/)
   await login(page, 'e2e_user', 'E2E_New!2345')
   await expect(page.getByText('欢迎使用 XX管理系统')).toBeVisible()
@@ -37,6 +37,7 @@ test('个人资料、头像上传删除和退出登录', async ({ page }) => {
   await page.getByTestId('user-menu').click()
   await page.getByText('个人信息', { exact: true }).click()
 
+  await page.getByTestId('profile-edit').click()
   await page.getByTestId('profile-nickname').fill('教学管理员')
   await page.getByTestId('profile-phone').fill('13800138000')
   await page.getByTestId('profile-save').click()
@@ -58,6 +59,7 @@ test('个人资料、头像上传删除和退出登录', async ({ page }) => {
 
   await page.getByTestId('user-menu').click()
   await page.getByText('退出登录', { exact: true }).click()
+  await page.getByRole('button', { name: '确定' }).click()
   await expect(page).toHaveURL(/#\/login/)
   expect(await page.evaluate(() => sessionStorage.getItem('token'))).toBeNull()
 })
